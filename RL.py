@@ -83,18 +83,31 @@ MAZE = [[1,None,2],
         [6,None,7]]
 ALPHA = 0.5
 GAMMA = 0.5
-REWARD = 2
-
+def update_q(q, state, a):
+    state-=1
+    d = ['H', 'B', 'G', 'D']
+    a = d.index(a)
+    before_update = q[state][a]
+    q[state][a] = (1-ALPHA) * q[state][a] + ALPHA * (R[state][a] + GAMMA * max(q[state]))
+    print('Updated q[{}][{}] from {} --> {}'.format(state, a, before_update, q[state][a]))
+    for i in q:
+        print(i)
 q=[[0 for _ in range(4)] for _ in range(7)]
-
+iter = 0
 s = 1
-for _ in range(2):
+for _ in range(200000):
+    iter+=1
     print("State : {}".format(s))
     acts = actions(s,R)
     act = pick_action(acts, q, s)
-    
+    update_q(q, s, act)
     new_s = transition(s, act, MAZE)
     s = new_s
+    if (new_s == 7):
+        print("")
+        print("HURRAY !!!")
+        print("iter {}".format(iter))
+        break
     print("")
 # update Q;
 
