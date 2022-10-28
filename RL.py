@@ -2,57 +2,57 @@
 import random
 import math
 import numpy as np
-D={
+import time
+Directions={
     'H':(-1,0),
     'B':(1,0),
     'G':(0,-1),
     'D':(0,1)
 }
 
-def actions(state, r):
+def actions(state, R):
     state-=1
-    d = ['H', 'B', 'G', 'D']
+    D = ['H', 'B', 'G', 'D']
     actions = []
-    # print("R[state]= ", r[state])
-    for i in range(len(r[state])):
-        if r[state][i] != None:
-            actions+=[d[i]]
+    for i in range(len(R[state])):
+        if R[state][i] != None:
+            actions+=[D[i]]
     print("Actions: {}".format(actions))
     return actions
 
 def transition(state,action,maze):
     """Returns next state."""
-    global D
+    global Directions
     new_state_coord = tuple()
     for i in range(len(maze)):
         for j in range(len(maze[i])):
             if (maze[i][j] == state):
-                new_state_coord = (i+D[action][0], j+D[action][1])
+                new_state_coord = (i+Directions[action][0], j+Directions[action][1])
     print("From s= {} --> s= {}".format(state, maze[new_state_coord[0]][new_state_coord[1]]))
     return maze[new_state_coord[0]][new_state_coord[1]]
 
 pGibbs = lambda x,actions:math.exp(x)/sum([math.exp(q[e]) for e in actions])
 
-def pick_action(actions, q, state):
+def pick_action(actions, Q, state):
     # picks a random action from actions consedering q matrix.
     # actions c ['H', 'B', 'G', 'D']
     # q = [[0 0 0 0], [0 0 0 0]...]
     # state c {e1, e2, e3} == {1, 2, 3, .., 7}
-    d = {
+    D = {
         'H' : 0,
         'B' : 1,
         'G' : 2,
         'D' : 3
     }
-    probs = q[state]
+    probs = Q[state]
     # compute the sum of exp(Q(state, ai))
     probabilities = []
     for action in actions:
-        probabilities.append(probs[d[action]])
-        # print("PROB[d[action]]= {}".format(probs[d[action]]))
+        probabilities.append(probs[D[action]])
+    probabilities = np.exp(np.array(probabilities))
     
     # GIBBES
-    probabilities = np.exp(np.array(probabilities)) / sum(np.exp(np.array(probabilities)))
+    probabilities /= sum(probabilities)
     
     for i in range(1, len(probabilities)):
         probabilities[i] += probabilities[i-1]
@@ -90,17 +90,35 @@ def update_q(q, state, a):
     before_update = q[state][a]
     q[state][a] = (1-ALPHA) * q[state][a] + ALPHA * (R[state][a] + GAMMA * max(q[state]))
     print('Updated q[{}][{}] from {} --> {}'.format(state, a, before_update, q[state][a]))
-    for i in q:
-        print(i)
-q=[[0 for _ in range(4)] for _ in range(7)]
+    for states in range(len(q)):
+        for actions in range(len(q[states])):
+            if state == states and actions == a:
+                print(f"\33[42m"+str(q[states][actions])+f"\033[0m",end=" ")
+            else :
+                print(q[states][actions],end=" ")
+        print()
+    print()
+        
+q=[[0.0 for _ in range(4)] for _ in range(7)]
 iter = 0
 s = 1
 for _ in range(200000):
     iter+=1
+    for i in MAZE:
+        for j in i:
+            if j==s:
+                print(f"\33[41m"+str(j)+f"\033[0m",end=" ")
+            elif (j==None): 
+                print("X",end=" ")
+            else :
+                print(j,end=" ")
+        print()
+    print()
     print("State : {}".format(s))
     acts = actions(s,R)
     act = pick_action(acts, q, s)
     update_q(q, s, act)
+    time.sleep(1)
     new_s = transition(s, act, MAZE)
     s = new_s
     if (new_s == 7):
@@ -109,9 +127,3 @@ for _ in range(200000):
         print("iter {}".format(iter))
         break
     print("")
-# update Q;
-
-
-# print(actions(4,R))
-# print(transition(1,'B',MAZE))
-# print(pick_action(actions(4,R), q, 4))
