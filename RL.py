@@ -100,30 +100,34 @@ def update_q(q, state, a):
     print()
         
 q=[[0.0 for _ in range(4)] for _ in range(7)]
-iter = 0
-s = 1
-for _ in range(200000):
-    iter+=1
-    for i in MAZE:
-        for j in i:
-            if j==s:
-                print(f"\33[41m"+str(j)+f"\033[0m",end=" ")
-            elif (j==None): 
-                print("X",end=" ")
-            else :
-                print(j,end=" ")
+iteration = 0
+for iteration in range(10):
+    iteration+=1
+    step = 0
+    s = 1
+    for step in range(200000):
+        step +=1
+        for i in MAZE:
+            for j in i:
+                if j==s:
+                    print(f"\33[41m"+str(j)+f"\033[0m",end=" ")
+                elif (j==None): 
+                    print("X",end=" ")
+                else :
+                    print(j,end=" ")
+            print()
         print()
-    print()
-    print("State : {}".format(s))
-    acts = actions(s,R)
-    act = pick_action(acts, q, s)
-    update_q(q, s, act)
-    time.sleep(1)
-    new_s = transition(s, act, MAZE)
-    s = new_s
-    if (new_s == 7):
+        print("State : {}".format(s))
+        acts = actions(s,R)
+        act = pick_action(acts, q, s)
+        update_q(q, s, act)
+        # time.sleep(1)
+        new_s = transition(s, act, MAZE)
+        s = new_s
+        if (new_s == 7):
+            print("")
+            print("HURRAY !!!")
+            print("step {}".format(step))
+            break
         print("")
-        print("HURRAY !!!")
-        print("iter {}".format(iter))
-        break
-    print("")
+    print("iteration {}".format(iteration))
