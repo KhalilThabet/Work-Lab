@@ -3,7 +3,9 @@ This is a simple 3x3 grid path finder using reinforcement learning.
 ### Grid
 
 | 1  | X | 2  |
+--- | --- | --- 
 | 3  | 4 | 5  |
+--- | --- | ---
 | 6  | X | 7  |
 
 
