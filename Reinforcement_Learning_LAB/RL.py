@@ -17,7 +17,7 @@ def actions(state, R):
     for i in range(len(R[state])):
         if R[state][i] != None:
             actions+=[D[i]]
-    print("Actions: {}".format(actions))
+    # print("Actions: {}".format(actions))
     return actions
 
 def transition(state,action,maze):
@@ -28,7 +28,7 @@ def transition(state,action,maze):
         for j in range(len(maze[i])):
             if (maze[i][j] == state):
                 new_state_coord = (i+Directions[action][0], j+Directions[action][1])
-    print("From s= {} --> s= {}".format(state, maze[new_state_coord[0]][new_state_coord[1]]))
+    # print("From s= {} --> s= {}".format(state, maze[new_state_coord[0]][new_state_coord[1]]))
     return maze[new_state_coord[0]][new_state_coord[1]]
 
 pGibbs = lambda x,actions:math.exp(x)/sum([math.exp(q[e]) for e in actions])
@@ -44,7 +44,7 @@ def pick_action(actions, Q, state):
         'G' : 2,
         'D' : 3
     }
-    probs = Q[state]
+    probs = Q[state-1]
     # compute the sum of exp(Q(state, ai))
     probabilities = []
     for action in actions:
@@ -60,12 +60,12 @@ def pick_action(actions, Q, state):
     probabilities = list(zip(probabilities, actions))
     random_number = random.random()
     chosen_action = None
-    print("Random number= {}".format(random_number))
+    # print("Random number= {}".format(random_number))
     for t in probabilities:
         if (random_number < t[0]):
             chosen_action = t[1]
             break
-    print("{} --> {}".format(probabilities, chosen_action))
+    # print("{} --> {}".format(probabilities, chosen_action))
     if (chosen_action == None):
         print("YOO CHECK pick_action FUNCTION.")
         exit(-1)
@@ -101,7 +101,7 @@ def update_q(q, state, a):
         
 q=[[0.0 for _ in range(4)] for _ in range(7)]
 iteration = 0
-for iteration in range(10):
+for iteration in range(20):
     iteration+=1
     step = 0
     s = 1
@@ -121,7 +121,7 @@ for iteration in range(10):
         acts = actions(s,R)
         act = pick_action(acts, q, s)
         update_q(q, s, act)
-        # time.sleep(1)
+        time.sleep(1)
         new_s = transition(s, act, MAZE)
         s = new_s
         if (new_s == 7):
@@ -129,5 +129,5 @@ for iteration in range(10):
             print("HURRAY !!!")
             print("step {}".format(step))
             break
-        print("")
-    print("iteration {}".format(iteration))
+        # print("")
+    print("---------iteration {}\n".format(iteration))
